@@ -4,7 +4,7 @@ import StudentForm from "@/components/forms/StudentForm";
 import Modal from "@/components/Modal";
 import { Student } from "@/types/global";
 import { roman } from "@ultirequiem/roman";
-import React, { use, useState } from "react";
+import { use, useState } from "react";
 import { CiEdit, CiTrash, CiCirclePlus } from "react-icons/ci";
 
 interface Props {

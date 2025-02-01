@@ -1,19 +1,6 @@
 import { Student } from "@/types/global";
-import { roman } from "@ultirequiem/roman";
-import React from "react";
 
-type Params = {
-  grade: number;
-  code: string;
-  odd: number;
-  even: number;
-};
-
-interface Props {
-  params: Promise<Params>;
-}
-
-const StudentsPage = async ({ params }: Props) => {
+const StudentsPage = async () => {
   return (
     <div>
       <div className="text-gray-900 grid grid-cols-3 items-center mt-4 bg-white bg-opacity-70 p-4 rounded-t-lg border-b-2 border-black">
@@ -21,7 +8,7 @@ const StudentsPage = async ({ params }: Props) => {
         <div className="font-bold text-center">NIS</div>
         <div className="font-bold text-center">Email wali</div>
       </div>
-      
+
       <div className="bg-white bg-opacity-70 px-4 rounded-b-lg">
         {studentListData.map(({ id, name, nis, parentEmail }) => (
           <div
