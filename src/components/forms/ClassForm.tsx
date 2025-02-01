@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactNode } from "react";
+import React, { FormEvent } from "react";
 
 interface Props {
   onClose: () => void;
