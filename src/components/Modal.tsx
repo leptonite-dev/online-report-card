@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 const ModalContent = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="w-full h-screen bg-black bg-opacity-50 fixed top-0 left-0 flex justify-center items-center">
+    <div className="w-full h-screen bg-black bg-opacity-50 fixed top-0 left-0 flex justify-center items-center p-4">
       {children}
     </div>
   );

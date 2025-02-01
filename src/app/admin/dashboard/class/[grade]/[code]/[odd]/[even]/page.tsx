@@ -2,6 +2,7 @@
 
 import StudentForm from "@/components/forms/StudentForm";
 import Modal from "@/components/Modal";
+import { Student } from "@/types/global";
 import { roman } from "@ultirequiem/roman";
 import React, { use, useState } from "react";
 import { CiEdit, CiTrash, CiCirclePlus } from "react-icons/ci";
@@ -89,31 +90,29 @@ const ClassPage = ({ params }: Props) => {
   );
 };
 
-type Student = {
-  id: string;
-  name: string;
-  parentEmail: string;
-};
-
 const studentListData: Student[] = [
   {
     id: "a",
     name: "Muhammad",
+    nis: 111,
     parentEmail: "azmiarzaki@gmail.com",
   },
   {
     id: "b",
     name: "Fauzan",
+    nis: 222,
     parentEmail: "azmiarzaki@gmail.com",
   },
   {
     id: "c",
     name: "Azmi",
+    nis: 333,
     parentEmail: "azmiarzaki@gmail.com",
   },
   {
     id: "d",
     name: "Arzaki",
+    nis: 444,
     parentEmail: "azmiarzaki@gmail.com",
   },
 ];
