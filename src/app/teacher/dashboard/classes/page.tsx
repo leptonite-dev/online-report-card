@@ -36,23 +36,6 @@ const ClassesPage = () => {
                   {academicYear.odd} / {academicYear.even}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => console.log("Editing")}
-                  className="bg-slate-500 p-2 rounded-lg"
-                >
-                  <CiEdit
-                    className="text-white pointer-events-none"
-                    size={24}
-                  />
-                </button>
-                <button className="bg-slate-500 p-2 rounded-lg">
-                  <CiTrash
-                    className="text-white pointer-events-none"
-                    size={24}
-                  />
-                </button>
-              </div>
             </div>
           </Link>
         ))}
