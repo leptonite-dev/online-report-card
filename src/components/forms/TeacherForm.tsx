@@ -1,3 +1,5 @@
+import { createClient } from "@/utils/supabase/client";
+import { redirect } from "next/navigation";
 import React, { FormEvent } from "react";
 
 interface Props {
@@ -5,13 +7,35 @@ interface Props {
 }
 
 function TeacherForm({ onClose }: Props) {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const signup = async (data: { email: string; password: string }) => {
+    const supabase = createClient();
+
+    const {
+      error,
+      data: { user },
+    } = await supabase.auth.signUp(data);
+
+    if (error) {
+      redirect("/error");
+    }
+
+    await supabase
+      .from("profiles")
+      .insert({ user_id: user!.id, acc_role: "teacher" });
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
-    const formObj = Object.fromEntries(formData);
+    const { name, email } = Object.fromEntries(formData) as {
+      name: string;
+      email: string;
+    };
 
-    console.log(formObj);
+    await signup({ email, password: name });
+
+    onClose();
   };
 
   return (
@@ -25,9 +49,9 @@ function TeacherForm({ onClose }: Props) {
         />
         <input
           className="bg-slate-500 px-4 py-2 rounded-lg text-white placeholder:text-white"
-          type="text"
-          name="nip"
-          placeholder="NIP"
+          type="email"
+          name="email"
+          placeholder="Email"
         />
       </div>
 

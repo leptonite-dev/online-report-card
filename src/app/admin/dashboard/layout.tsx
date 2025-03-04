@@ -10,12 +10,12 @@ const navLinks = [
     name: "Guru",
   },
   {
-    path: "class",
+    path: "classes",
     name: "Kelas",
   },
   {
-    path: "ranking",
-    name: "Ranking",
+    path: "subjects",
+    name: "Mata Pelajaran",
   },
 ];
 

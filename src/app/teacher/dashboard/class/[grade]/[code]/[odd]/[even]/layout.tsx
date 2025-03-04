@@ -1,10 +1,12 @@
 "use client";
 
+import { createClient } from "@/utils/supabase/client";
+import { QueryData } from "@supabase/supabase-js";
 import { roman } from "@ultirequiem/roman";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { ReactNode, use } from "react";
+import React, { ReactNode, use, useEffect, useState } from "react";
 
 type Params = {
   grade: number;
@@ -18,9 +20,42 @@ interface Props {
   params: Promise<Params>;
 }
 
+const supabase = createClient();
+
+const classDataQuery = supabase
+  .from("classes")
+  .select("*, teacher:teacher_id (name)");
+
+type ClassDataArray = QueryData<typeof classDataQuery>;
+
+type ClassData = ClassDataArray extends Array<infer U> ? U : never;
+
 const ClassLayout = ({ children, params }: Props) => {
   const { grade, code, odd, even } = use(params);
   const pathname = usePathname().split("/").filter(Boolean).pop();
+  const [classData, setClassData] = useState<ClassData>();
+
+  useEffect(() => {
+    const getClassData = async () => {
+      try {
+        const { data, error } = await classDataQuery
+          .eq("grade", grade)
+          .eq("code", code)
+          .eq("academic_year_odd", odd)
+          .eq("academic_year_even", even);
+
+        if (error) throw error;
+
+        if (data) {
+          setClassData(data[0]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getClassData();
+  }, []);
 
   return (
     <div>
@@ -42,11 +77,7 @@ const ClassLayout = ({ children, params }: Props) => {
         <div className="col-span-2 flex justify-between">
           Guru <span>:</span>
         </div>
-        <div className="col-span-10">Muhammad Fauzan Azmi Arzaki</div>
-
-        <div className="col-span-2 flex justify-between">
-          Murid <span>:</span>
-        </div>
+        <div className="col-span-10">{classData?.teacher.name}</div>
       </div>
 
       <div className="flex gap-1 mt-4">

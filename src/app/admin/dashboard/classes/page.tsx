@@ -1,31 +1,31 @@
 "use client";
 
-import TeacherForm from "@/components/forms/TeacherForm";
+import ClassForm from "@/components/forms/ClassForm";
 import Modal from "@/components/Modal";
 import { useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
-import TeachersDisplay from "./TeachersDisplay";
+import ClassesDisplay from "./ClassesDisplay";
 
-export default function TeacherListPage() {
-  const [isAddingTeacher, setIsAddingTeacher] = useState(false);
+export default function ClassListPage() {
+  const [isAddingClass, setIsAddingClass] = useState(false);
 
   return (
     <>
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <TeachersDisplay />
+          <ClassesDisplay />
         </div>
 
         <button
-          onClick={() => setIsAddingTeacher(true)}
+          onClick={() => setIsAddingClass(true)}
           className="bg-slate-500 p-2 rounded-lg fixed bottom-4 right-4 shadow-xl"
         >
           <CiCirclePlus className="text-white" size={32} />
         </button>
       </div>
 
-      <Modal isOpen={isAddingTeacher}>
-        <TeacherForm onClose={() => setIsAddingTeacher(false)} />
+      <Modal isOpen={isAddingClass}>
+        <ClassForm onClose={() => setIsAddingClass(false)} />
       </Modal>
     </>
   );
