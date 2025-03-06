@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import { CiUser } from "react-icons/ci";
 import { createClient } from "@/utils/supabase/client";

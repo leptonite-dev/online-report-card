@@ -3,7 +3,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { Database } from "../../types/database.types";
 
 export async function updateSession(request: NextRequest) {
+  const headers = new Headers(request.headers);
+  headers.set("x-current-path", request.nextUrl.pathname);
+
   let supabaseResponse = NextResponse.next({
+    headers,
     request,
   });
 

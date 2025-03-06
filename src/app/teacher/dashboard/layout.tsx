@@ -1,8 +1,10 @@
 "use client";
 
+import { createClient } from "@/utils/supabase/client";
 import clsx from "clsx";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
+import { FormEvent } from "react";
 
 const navLinks = [
   {
@@ -11,12 +13,26 @@ const navLinks = [
   },
 ];
 
+const supabase = await createClient();
+
 export default function TeacherDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  const handleSignOut = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error(error);
+    } else {
+      redirect("/");
+    }
+  };
 
   return (
     <div className="p-4">
@@ -44,7 +60,7 @@ export default function TeacherDashboardLayout({
           </nav>
         </div>
 
-        <form action="">
+        <form onSubmit={handleSignOut}>
           <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
             Sign out
           </button>
