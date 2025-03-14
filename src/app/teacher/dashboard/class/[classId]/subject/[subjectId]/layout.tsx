@@ -1,18 +1,16 @@
 "use client";
 
+import { ClassRoom, TClassRoomResponse } from "@/lib/data/classRoom";
 import { createClient } from "@/utils/supabase/client";
-import { QueryData } from "@supabase/supabase-js";
 import { roman } from "@ultirequiem/roman";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { ReactNode, use, useEffect, useState } from "react";
+import { ReactNode, use, useEffect, useState } from "react";
 
 type Params = {
-  grade: number;
-  code: string;
-  odd: number;
-  even: number;
+  classId: number;
+  subjectId: number;
 };
 
 interface Props {
@@ -20,64 +18,43 @@ interface Props {
   params: Promise<Params>;
 }
 
-const supabase = createClient();
-
-const classDataQuery = supabase
-  .from("classes")
-  .select("*, teacher:teacher_id (name)");
-
-type ClassDataArray = QueryData<typeof classDataQuery>;
-
-type ClassData = ClassDataArray extends Array<infer U> ? U : never;
+const client = createClient();
+const classRoom = new ClassRoom(client);
 
 const ClassLayout = ({ children, params }: Props) => {
-  const { grade, code, odd, even } = use(params);
+  const { classId, subjectId } = use(params);
   const pathname = usePathname().split("/").filter(Boolean).pop();
-  const [classData, setClassData] = useState<ClassData>();
+  const [classRoomData, setClassRoomData] = useState<TClassRoomResponse>();
 
   useEffect(() => {
-    const getClassData = async () => {
-      try {
-        const { data, error } = await classDataQuery
-          .eq("grade", grade)
-          .eq("code", code)
-          .eq("academic_year_odd", odd)
-          .eq("academic_year_even", even);
-
-        if (error) throw error;
-
-        if (data) {
-          setClassData(data[0]);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    const getClassRoomData = async () => {
+      setClassRoomData(await classRoom.getBy([{ col: "id", val: classId }]));
     };
 
-    getClassData();
+    getClassRoomData();
   }, []);
 
-  return (
+  return classRoomData ? (
     <div>
       <div className="grid grid-cols-12 gap-2 text-white">
         <div className="col-span-2 flex justify-between">
           Kelas <span>:</span>
         </div>
         <div className="col-span-10">
-          {roman(grade)} / {code}
+          {roman(classRoomData.grade)} / {classRoomData.code}
         </div>
 
         <div className="col-span-2 flex justify-between">
           Tahun ajaran <span>:</span>
         </div>
         <div className="col-span-10">
-          {odd} / {even}
+          {classRoomData.academic_year_odd} / {classRoomData.academic_year_even}
         </div>
 
         <div className="col-span-2 flex justify-between">
-          Guru <span>:</span>
+          Wali kelas <span>:</span>
         </div>
-        <div className="col-span-10">{classData?.teacher.name}</div>
+        <div className="col-span-10">{classRoomData.teacher.name}</div>
       </div>
 
       <div className="flex gap-1 mt-4">
@@ -107,7 +84,7 @@ const ClassLayout = ({ children, params }: Props) => {
 
       <div>{children}</div>
     </div>
-  );
+  ) : null;
 };
 
 export default ClassLayout;
