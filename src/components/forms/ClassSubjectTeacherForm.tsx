@@ -1,12 +1,16 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import { TProfile, TStudent, TSubject } from "@/types/public.database.types";
+import { FormEvent, useEffect, useState } from "react";
+import {
+  TClassSubjectTeacher,
+  TProfile,
+  TSubject,
+} from "@/types/public.database.types";
 import { createClient } from "@/utils/supabase/client";
 import { Profile } from "@/lib/data/profile";
 import { Subject } from "@/lib/data/subject";
-import { SubjectClassroom as ClassSubjectTeacher } from "@/lib/data/subjectClassroom";
+import { ClassSubjectTeacher } from "@/lib/data/classSubjectTeacher";
 
 interface Props {
-  initData?: TStudent | null;
+  initData?: TClassSubjectTeacher;
   classId: number;
   onClose: () => void;
   onSuccess?: () => void;
@@ -44,6 +48,16 @@ const ClassSubjectTeacherForm = ({
     }
   };
 
+  const updateClassSubjectTeacher = async (data: TClassSubjectTeacher) => {
+    const success = await classSubjectTeacher.update(data);
+
+    if (!success) {
+      alert("Tidak dapat mengubah data");
+    }
+
+    onClose();
+  };
+
   const getTeachers = async () => {
     setTeachers(await profile.getAllTeachers());
   };
@@ -69,7 +83,7 @@ const ClassSubjectTeacherForm = ({
     console.log(formObj);
 
     if (initData) {
-      // updateStudent({ ...initData, ...formObj });
+      updateClassSubjectTeacher({ ...initData, ...formObj });
     } else {
       createClassSubjectTeacher(classId, subjectId, teacherId);
     }

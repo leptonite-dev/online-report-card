@@ -8,12 +8,12 @@ import { FormEvent } from "react";
 
 const navLinks = [
   {
-    path: "teacher",
-    name: "Guru",
-  },
-  {
     path: "classes",
     name: "Kelas",
+  },
+  {
+    path: "teacher",
+    name: "Guru",
   },
   {
     path: "subjects",

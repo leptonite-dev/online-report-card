@@ -9,11 +9,15 @@ export class Student {
     this.client = client;
   }
 
+  table = () => {
+    return this.client.from("students");
+  };
+
   create = async (student: Omit<TStudent, "id" | "created_at">) => {
     const { error } = await this.client.from("students").insert(student);
 
     if (error) {
-      console.error(error);
+      console.error("Cannot create student", error);
       return false;
     }
 
@@ -27,6 +31,20 @@ export class Student {
 
     return data || [];
   };
+
+  async getAllBy(where: { col: string; val: number | string }[]) {
+    let query = this.table().select();
+
+    where.forEach(({ col, val }) => {
+      query = query.eq(col, val);
+    });
+
+    const { data, error } = await query.select();
+
+    if (error) console.error("Cannot get students", error);
+
+    return data || [];
+  }
 
   getByClassId = async (classId: number) => {
     const { data, error } = await this.client

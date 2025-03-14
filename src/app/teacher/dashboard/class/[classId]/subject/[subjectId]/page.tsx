@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 type Params = {
-  even: number;
+  subjectId: number;
 };
 
 interface Props {
@@ -9,8 +9,8 @@ interface Props {
 }
 
 const ClassPage = async ({ params }: Props) => {
-  const { even } = await params;
-  return redirect(`${even}/students`);
+  const { subjectId } = await params;
+  return redirect(`${subjectId}/students`);
 };
 
 export default ClassPage;

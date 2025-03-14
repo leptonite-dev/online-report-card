@@ -1,10 +1,13 @@
 "use client";
 
+import { Profile } from "@/lib/data/profile";
+import { TProfile } from "@/types/public.database.types";
 import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 import clsx from "clsx";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 const navLinks = [
   {
@@ -13,7 +16,8 @@ const navLinks = [
   },
 ];
 
-const supabase = await createClient();
+const client = createClient();
+const profile = new Profile(client);
 
 export default function TeacherDashboardLayout({
   children,
@@ -21,11 +25,12 @@ export default function TeacherDashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [userProfile, setUserProfile] = useState<TProfile | null>(null);
 
   const handleSignOut = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const { error } = await supabase.auth.signOut();
+    const { error } = await client.auth.signOut();
 
     if (error) {
       console.error(error);
@@ -33,6 +38,25 @@ export default function TeacherDashboardLayout({
       redirect("/");
     }
   };
+
+  useEffect(() => {
+    async function getUser() {
+      const { data, error } = await client.auth.getUser();
+
+      if (error) {
+        console.error("Cannot get user", error);
+        return;
+      }
+
+      if (data) {
+        setUserProfile(
+          await profile.getBy([{ col: "user_id", val: data.user.id }])
+        );
+      }
+    }
+
+    getUser();
+  }, [userProfile]);
 
   return (
     <div className="p-4">
@@ -60,11 +84,14 @@ export default function TeacherDashboardLayout({
           </nav>
         </div>
 
-        <form onSubmit={handleSignOut}>
-          <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
-            Sign out
-          </button>
-        </form>
+        <div className="flex items-center">
+          {userProfile && <div>{userProfile.name}</div>} <span className="inline-block ml-2">|</span>
+          <form onSubmit={handleSignOut}>
+            <button className="hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition-colors">
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
 
       <div className="p-4 bg-slate-500 rounded-xl mt-6 mb-16">{children}</div>

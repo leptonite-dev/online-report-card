@@ -8,6 +8,24 @@ export class Profile {
     this.client = client;
   }
 
+  table = () => {
+    return this.client.from("profiles");
+  };
+
+  async getBy(where: { col: string; val: number | string }[]) {
+    let query = this.table().select();
+
+    where.forEach(({ col, val }) => {
+      query = query.eq(col, val);
+    });
+
+    const { data, error } = await query.select();
+
+    if (error) console.error("Cannot get profile", error);
+
+    return data ? data[0] : null;
+  }
+
   getAll = async () => {
     const { data, error } = await this.client.from("profiles").select("*");
 

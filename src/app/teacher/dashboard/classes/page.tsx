@@ -5,37 +5,29 @@ import { roman } from "@ultirequiem/roman";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MdOutlineClass } from "react-icons/md";
-import { TClass } from "@/types/public.database.types";
+import {
+  ClassSubjectTeacher,
+  TClassSubjectTeacherResponse,
+} from "@/lib/data/classSubjectTeacher";
 
-const supabase = createClient();
+const client = createClient();
+const classSubjectTeacher = new ClassSubjectTeacher(client);
 
 const ClassesPage = () => {
-  const [classes, setClasses] = useState<TClass[]>();
-
-  const getClasses = async () => {
-    try {
-      const { data: user, error: authError } = await supabase.auth.getUser();
-
-      if (authError) throw authError;
-
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("classes")
-        .select("*")
-        .eq("teacher_id", user.user.id);
-
-      if (error) throw error;
-
-      if (data) {
-        setClasses(data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [classes, setClasses] = useState<TClassSubjectTeacherResponse[]>();
 
   useEffect(() => {
+    async function getClasses() {
+      setClasses(
+        await classSubjectTeacher.getAllBy([
+          {
+            col: "teacher_id",
+            val: (await client.auth.getUser()).data.user!.id,
+          },
+        ])
+      );
+    }
+
     getClasses();
   }, []);
 
@@ -43,39 +35,35 @@ const ClassesPage = () => {
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {classes &&
-          classes.map(
-            ({ id, grade, code, academic_year_odd, academic_year_even }) => (
-              <Link
-                onClick={(event) => {
-                  if (event.target instanceof HTMLButtonElement) {
-                    event.preventDefault();
-                  }
-                }}
-                href={`class/${grade}/${code}/${academic_year_odd}/${academic_year_even}`}
-                className="bg-white bg-opacity-70 rounded-lg p-4 cursor-pointer"
-                key={id}
-              >
-                <div className="bg-slate-500 rounded-lg aspect-square w-full flex justify-center items-center">
-                  <MdOutlineClass
-                    className="text-white opacity-70"
-                    size={256}
-                  />
-                </div>
+          classes.map(({ classroom, subject, teacher }) => (
+            <Link
+              onClick={(event) => {
+                if (event.target instanceof HTMLButtonElement) {
+                  event.preventDefault();
+                }
+              }}
+              href={`class/${classroom.id}/subject/${subject.id}`}
+              className="bg-white bg-opacity-70 rounded-lg p-4 cursor-pointer"
+              key={`${classroom.id}|${subject.id}`}
+            >
+              <div className="bg-slate-500 rounded-lg aspect-square w-full flex justify-center items-center">
+                <MdOutlineClass className="text-white opacity-70" size={256} />
+              </div>
 
-                <div className="py-2 flex justify-between mt-4">
-                  <div>
-                    <div className="font-bold">
-                      {roman(grade)} / {code}
-                    </div>
-                    <div>
-                      <span className="font-bold">TA: </span>
-                      {academic_year_odd} / {academic_year_even}
-                    </div>
+              <div className="py-2 mt-4 flex flex-col gap-y-3">
+                <div className="flex justify-between font-bold w-full">
+                  <div>{subject.name}</div>
+                  <div className="font-bold">
+                    {roman(classroom.grade)} / {classroom.code}
                   </div>
                 </div>
-              </Link>
-            )
-          )}
+                <div>
+                  <span className="font-bold">TA: </span>
+                  {classroom.academic_year_odd} / {classroom.academic_year_even}
+                </div>
+              </div>
+            </Link>
+          ))}
       </div>
     </div>
   );

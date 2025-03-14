@@ -1,6 +1,21 @@
-import { Student } from "@/types/global";
+import { Student } from "@/lib/data/student";
+import { createClient } from "@/utils/supabase/server";
 
-const StudentsPage = async () => {
+type Params = {
+  classId: number;
+  subjectId: number;
+};
+
+interface Props {
+  params: Promise<Params>;
+}
+
+const StudentsPage = async ({ params }: Props) => {
+  const student = new Student(await createClient());
+  const { classId, subjectId } = await params;
+
+  const students = await student.getAllBy([{ col: "class_id", val: classId }]);
+
   return (
     <div>
       <div className="text-gray-900 grid grid-cols-3 items-center mt-4 bg-white bg-opacity-70 p-4 rounded-t-lg border-b-2 border-black">
@@ -10,46 +25,19 @@ const StudentsPage = async () => {
       </div>
 
       <div className="bg-white bg-opacity-70 px-4 rounded-b-lg">
-        {studentListData.map(({ id, name, nis, parentEmail }) => (
+        {students.map(({ id, name, nis, parent_email }) => (
           <div
             className="text-gray-900 py-4 [&:not(:last-child)]:border-b border-black grid grid-cols-3"
             key={id}
           >
             <div>{name}</div>
             <div className="text-center">{nis}</div>
-            <div>{parentEmail}</div>
+            <div>{parent_email}</div>
           </div>
         ))}
       </div>
     </div>
   );
 };
-
-const studentListData: Student[] = [
-  {
-    id: "a",
-    name: "Muhammad",
-    nis: 111,
-    parentEmail: "azmiarzaki@gmail.com",
-  },
-  {
-    id: "b",
-    name: "Fauzan",
-    nis: 222,
-    parentEmail: "azmiarzaki@gmail.com",
-  },
-  {
-    id: "c",
-    name: "Azmi",
-    nis: 333,
-    parentEmail: "azmiarzaki@gmail.com",
-  },
-  {
-    id: "d",
-    name: "Arzaki",
-    nis: 444,
-    parentEmail: "azmiarzaki@gmail.com",
-  },
-];
 
 export default StudentsPage;

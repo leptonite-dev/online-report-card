@@ -8,6 +8,10 @@ export class ClassRoom {
     this.client = client;
   }
 
+  table = () => {
+    return this.client.from("classes");
+  };
+
   getAll = async () => {
     const { data, error } = await this.client.from("classes").select("*");
 
@@ -15,6 +19,20 @@ export class ClassRoom {
 
     return data || [];
   };
+
+  async getAllBy(where: { col: string; val: number | string }[]) {
+    let query = this.table().select();
+
+    where.forEach(({ col, val }) => {
+      query = query.eq(col, val);
+    });
+
+    const { data, error } = await query.select("*");
+
+    if (error) console.error("Cannot get class rooms", error);
+
+    return data || [];
+  }
 
   delete = async (id: number) => {
     const { error } = await this.client.from("classes").delete().eq("id", id);
